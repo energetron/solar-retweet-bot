@@ -4,24 +4,25 @@ import time
 import os
 from datetime import datetime
 
-# Twitter API credentials - will be set automatically
+# Twitter API credentials
 BEARER_TOKEN = os.getenv('BEARER_TOKEN')
 CONSUMER_KEY = os.getenv('CONSUMER_KEY')
 CONSUMER_SECRET = os.getenv('CONSUMER_SECRET')
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 ACCESS_TOKEN_SECRET = os.getenv('ACCESS_TOKEN_SECRET')
 
-# Solar energy keywords to search for
+# Broader solar energy keywords
 SOLAR_KEYWORDS = [
     'solar', 'SolarEnergy', 'SolarPower', 'RenewableEnergy', 
     'solar energy', 'solar panels', 'clean energy',
-    'photovoltaic', 'sun power', 'renewable'
+    'photovoltaic', 'sun power', 'renewable', 'solar panel',
+    'climate change', 'green energy', 'clean power'
 ]
 
 # Specific solar accounts (without @)
 SOLAR_ACCOUNTS = [
-    'SolarEnergyUK', 'IRENAsolar', 'Solar_Edition',
-    'SolarPowerWorld', 'SEIA'
+    'SolarEnergyUK', 'IRENA', 'Solar_Edition',
+    'SolarPowerWorld', 'SEIA', 'SolarQuarter'
 ]
 
 def setup_twitter_api():
@@ -35,44 +36,48 @@ def setup_twitter_api():
     return client
 
 def get_random_search_term():
-    # 70% chance to search by keyword, 30% to search by account
-    if random.random() < 0.7:
+    # 60% chance to search by keyword, 40% to search by account
+    if random.random() < 0.6:
         return random.choice(SOLAR_KEYWORDS)
     else:
         account = random.choice(SOLAR_ACCOUNTS)
         return f"from:{account}"
 
 def should_retweet():
-    # 80% chance to retweet when a tweet is found
-    return random.random() < 0.8
+    # 90% chance to retweet when a tweet is found (increased from 80%)
+    return random.random() < 0.9
 
 def run_retweet_bot():
     try:
         client = setup_twitter_api()
         
         search_term = get_random_search_term()
-        print(f"Searching for: {search_term}")
+        print(f"🔍 Searching for: {search_term}")
         
-        # Search for recent tweets
+        # Search for recent tweets (broader search)
         tweets = client.search_recent_tweets(
-            query=search_term + " -is:retweet",
-            max_results=10,
-            tweet_fields=['author_id', 'created_at']
+            query=search_term + " -is:retweet -is:reply",
+            max_results=15,  # Increased from 10
+            tweet_fields=['author_id', 'created_at', 'public_metrics']
         )
         
         if tweets.data:
+            print(f"✅ Found {len(tweets.data)} tweets")
+            
             # Filter tweets and pick one randomly
             valid_tweets = [tweet for tweet in tweets.data if should_retweet()]
+            
             if valid_tweets:
                 tweet_to_retweet = random.choice(valid_tweets)
                 
                 # Retweet the selected tweet
                 client.retweet(tweet_to_retweet.id)
-                print(f"✅ Retweeted tweet ID: {tweet_to_retweet.id}")
-                print(f"🔍 Search term used: {search_term}")
+                print(f"🔄 RETWEETED tweet ID: {tweet_to_retweet.id}")
+                print(f"📝 Search term: {search_term}")
                 print(f"⏰ Time: {datetime.now()}")
+                print(f"📊 Tweet stats: {tweet_to_retweet.public_metrics}")
             else:
-                print("🤔 No tweets selected for retweeting this time")
+                print("🤔 Found tweets but decided not to retweet any")
         else:
             print("❌ No tweets found for the search term")
             
