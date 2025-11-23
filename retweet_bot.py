@@ -13,9 +13,9 @@ ACCESS_TOKEN_SECRET = os.getenv('ACCESS_TOKEN_SECRET')
 
 # Solar energy keywords to search for
 SOLAR_KEYWORDS = [
-    '#SolarEnergy', '#SolarPower', '#RenewableEnergy', 
-    'solar energy', 'solar panels', 'solar technology',
-    'clean energy', 'photovoltaic'
+    'solar', 'SolarEnergy', 'SolarPower', 'RenewableEnergy', 
+    'solar energy', 'solar panels', 'clean energy',
+    'photovoltaic', 'sun power', 'renewable'
 ]
 
 # Specific solar accounts (without @)
