@@ -1,6 +1,7 @@
 name: Solar Retweet Bot
 
 on:
+  workflow_dispatch:  # ← THIS ENABLES MANUAL RUN BUTTON
   schedule:
     # Run at random times throughout the day
     - cron: '15 2,8,14,20 * * *'
