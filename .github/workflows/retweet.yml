@@ -1,0 +1,33 @@
+name: Solar Retweet Bot
+
+on:
+  schedule:
+    # Run at random times throughout the day
+    - cron: '15 2,8,14,20 * * *'
+    - cron: '45 4,10,16,22 * * *'
+    - cron: '30 1,7,13,19 * * *'
+    - cron: '0 6,12,18,0 * * *'
+
+jobs:
+  retweet:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    
+    - name: Run retweet bot
+      env:
+        BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
+        CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
+        CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      run: python retweet_bot.py
